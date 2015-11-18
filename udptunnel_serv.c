@@ -90,6 +90,12 @@ int main(int argc, char **argv)
 			perror("recvfrom: ");
 			exit(1);
 		}
+		nsend = sendto(sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&cliaddr, sizeof(cliaddr));
+		if(nsend < 0)
+		{
+			perror("sendto: ");
+			exit(1);
+		}
 	}
 
 	return 0;
