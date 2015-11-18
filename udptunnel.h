@@ -25,7 +25,7 @@ typedef unsigned short u16;
 typedef unsigned int u32;
 
 #define MAXLEN 120
-#define PORT 9876
+#define PORT 23456
 
 typedef struct
 {
