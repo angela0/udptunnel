@@ -39,14 +39,15 @@ int main(int argc, char **argv)
 		ip->ihl = 5;
 		ip->version = 4;
 		ip->tos = 0;
-		ip->tot_len = IP_SIZE+UDP_SIZE+datalen;
+		ip->tot_len = htons(IP_SIZE+UDP_SIZE+datalen);
 		ip->id = 0;
 		ip->frag_off = 0x40;
 		ip->ttl = 0x40;
 		ip->protocol = IPPROTO_UDP;
-		ip->check = checksum((u16 *)(buf+ETH_SIZE), IP_SIZE+UDP_SIZE+datalen);
+		ip->check = 0;
 		ip->daddr = inet_addr("10.0.0.166");
 		ip->saddr = inet_addr("10.0.0.166");
+		ip->check = checksum((u16 *)(buf+ETH_SIZE), IP_SIZE+UDP_SIZE+datalen);
 
 		udp->d_port = htons(PORT);
 		udp->s_port = htons(12345);

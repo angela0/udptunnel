@@ -75,6 +75,7 @@ int main(int argc, char **argv)
 		memcpy(tmp, &psd, sizeof(psd));
 		memcpy(tmp+sizeof(psd), udp, UDP_SIZE+datalen);
 		udp->check = checksum((u16 *)tmp, sizeof(tmp));
+		printf("%x\n", udp->check);
 
 		nsend = sendto(rawsockfd, buf, sizeof(buf), 0, (struct sockaddr *)&dest, sizeof(dest));
 		if(nsend < 0)
