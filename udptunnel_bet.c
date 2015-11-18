@@ -16,13 +16,22 @@ int main(int argc, char **argv)
 		exit(2);
 	}
 
-	struct sockaddr_in dest;
+	struct sockaddr_in myaddr;
 	int nrecv;
 	char buf[MAXLEN];
 
-//	bzero(&dest, sizeof(dest));
-//	dest.sin_family = AF_INET;
-//	dest.sin_port = htons(PORT);
+
+	bzero(&myaddr, sizeof(myaddr));
+	myaddr.sin_family = AF_INET;
+	myaddr.sin_port = htons(PORT);
+	myaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	myaddr.sin_len = sizeof(myaddr);
+
+	if(bind(sockfd, (struct sockaddr *)&myaddr, myaddr.sin_len) < 0)
+	{
+		perror("bind: ");
+		exit(1);
+	}
 
 
 	for( ; ; )

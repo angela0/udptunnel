@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 	struct sockaddr_in dest, servaddr, cliaddr;
 	char buf[MAXLEN];
 	char tmp[MAXLEN];
-	int nrecv;
+	int nrecv, nsend;
 
 	iphdr * ip = (iphdr *)buf;
 	udphdr *udp = (udphdr *)(buf+IP_SIZE);
@@ -57,8 +57,8 @@ int main(int argc, char **argv)
 		udp->s_port = htons(PORT);
 		udp->length = htons(UDP_SIZE+datalen);
 
-		sendto(rawsockfd, buf, sizeof(buf), 0, (struct sockaddr *)&dest, sizeof(dest));
-		if(nrecv < 0)
+		nsend = sendto(rawsockfd, buf, sizeof(buf), 0, (struct sockaddr *)&dest, sizeof(dest));
+		if(nsend < 0)
 		{
 			perror("sendto: ");
 			exit(1);
