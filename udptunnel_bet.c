@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	const *reback[3] = {"Invalid target!!\n", "You can't move now!!!\n", "I can't understand you!!!\n"};
+	const char *reback[3] = {"Invalid target!!\n", "You can't move now!!!\n", "I can't understand you!!!\n"};
 
 	for( ; ; )
 	{
