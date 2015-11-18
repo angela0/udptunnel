@@ -21,21 +21,21 @@ int main(int argc, char **argv)
 		exit(2);
 	}
 	struct sockaddr_in servaddr;
-	char buf[MAXLEN];
-	ethhdr *eth = (ethhdr *)buf;
-	iphdr * ip = (iphdr *)(buf+ETH_SIZE);
-	udphdr *udp = (udphdr *)(buf+ETH_SIZE+IP_SIZE);
+	char buf[MAXLEN] = {0};
+	iphdr * ip = (iphdr *)buf;
+	udphdr *udp = (udphdr *)(buf+IP_SIZE);
 
-	datalen = MAXLEN-ETH_SIZE-IP_SIZE-UDP_SIZE;
+	datalen = MAXLEN-IP_SIZE-UDP_SIZE;
 
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
-	inet_pton(AF_INET, argv[1], &servaddr.sin_addr);
+	servaddr.sin_addr.s_addr = inet_addr("10.0.0.16");
 	servaddr.sin_port = htons(PORT);
+	servaddr.sin_len = sizeof(servaddr);
 
 	for( ; ; )
 	{
-		bzero(eth, MAXLEN);
+		bzero(ip, MAXLEN);
 		ip->ihl = 5;
 		ip->version = 4;
 		ip->tos = 0;
@@ -45,18 +45,18 @@ int main(int argc, char **argv)
 		ip->ttl = 0x40;
 		ip->protocol = IPPROTO_UDP;
 		ip->check = checksum((u16 *)(buf+ETH_SIZE), IP_SIZE+UDP_SIZE+datalen);
-		ip->daddr = servaddr.sin_addr.s_addr;
-		ip->saddr = servaddr.sin_addr.s_addr;
+		ip->daddr = inet_addr("10.0.0.166");
+		ip->saddr = inet_addr("10.0.0.166");
 
 		udp->d_port = htons(PORT);
-		udp->s_port = htons(PORT);
+		udp->s_port = htons(12345);
 		udp->length = htons(UDP_SIZE+datalen);
 		fputs("please input data: ", stdout);
 		fgets((char *)udp->data, datalen, stdin);
 
 		psdhdr psd;
-		psd.s_ip = inet_addr("127.0.0.1");
-		psd.d_ip = inet_addr("127.0.0.1");
+		psd.s_ip = inet_addr("10.0.0.166");
+		psd.d_ip = inet_addr("10.0.0.166");
 		psd.mbz = 0;
 		psd.proto = 0x11;
 		psd.plen = udp->length;
@@ -65,8 +65,6 @@ int main(int argc, char **argv)
 		memcpy(tmp, &psd, sizeof(psd));
 		memcpy(tmp+sizeof(psd), udp, UDP_SIZE+datalen);
 		udp->check = checksum((u16 *)tmp, sizeof(tmp));
-
-
 
 		int res = sendto(sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
 		if(res < 0)

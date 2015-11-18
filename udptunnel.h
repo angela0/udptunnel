@@ -58,6 +58,7 @@ typedef struct
 	u16 type;
 } ethhdr;
 
+
 typedef struct psd_header
 {//伪头部，用于计算校验和
     u32 s_ip;//source ip

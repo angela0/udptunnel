@@ -10,26 +10,33 @@
 int main(int argc, char **argv)
 {
 	int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-	if(sockfd < 0)
+	int rawsockfd = socket(AF_INET, SOCK_RAW, IPPROTO_UDP);
+	if(sockfd < 0 || rawsockfd < 0)
 	{
 		perror("socket: ");
 		exit(2);
 	}
-	struct sockaddr_in destaddr, servaddr, cliaddr;
+
+	struct sockaddr_in dest, servaddr, cliaddr;
 	char buf[MAXLEN];
 	char tmp[MAXLEN];
 	int nrecv;
-	ethhdr *eth = (ethhdr *)buf;
-	iphdr * ip = (iphdr *)(buf+ETH_SIZE);
-	udphdr *udp = (udphdr *)(buf+ETH_SIZE+IP_SIZE);
 
-	datalen = MAXLEN-ETH_SIZE-IP_SIZE-UDP_SIZE;
+	iphdr * ip = (iphdr *)buf;
+	udphdr *udp = (udphdr *)(buf+IP_SIZE);
+
+	datalen = MAXLEN-IP_SIZE-UDP_SIZE;
+
+	bzero(&dest, sizeof(dest));
+	dest.sin_family = AF_INET;
+	dest.sin_addr.s_addr = inet_addr("10.0.0.166");
+	dest.sin_port = htons(PORT);
+
 
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	servaddr.sin_port = htons(PORT);
-
 	if(bind(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
 	{
 		perror("bind: ");
@@ -44,17 +51,18 @@ int main(int argc, char **argv)
 			perror("recvfrom: ");
 			exit(1);
 		}
-		printf("eth info:\n");
-		printf("\tsource mac: %s\n\tdest mac: %s\n\teth type: %u\n", eth->smac, eth->dmac, eth->type);
 
-		printf("ip info:\n");
-		printf("\tsource ip: %s\n\tdest ip: %s\n\tip proto: %u\n",
-				ntop(tmp, ip->saddr), ntop(tmp, ip->daddr), ip->protocol);
+		ip->saddr = inet_addr("10.0.0.16");
+		udp->d_port = htons(PORT);
+		udp->s_port = htons(PORT);
+		udp->length = htons(UDP_SIZE+datalen);
 
-		printf("udp info:\n");
-		printf("\tsource port: %d\n\tdest port: %d\n", ntohs(udp->s_port), htons(udp->d_port));
-		printf("data:\n");
-		printf("\t%s\n", udp->data);
+		sendto(rawsockfd, buf, sizeof(buf), 0, (struct sockaddr *)&dest, sizeof(dest));
+		if(nrecv < 0)
+		{
+			perror("sendto: ");
+			exit(1);
+		}
 	}
 
 	return 0;
