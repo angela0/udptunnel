@@ -52,7 +52,8 @@ int main(int argc, char **argv)
 
 	for( ; ; )
 	{
-		nrecv = recvfrom(sockfd, buf, sizeof(buf), 0, NULL, NULL);
+		socklen_t lencli = sizeof(cliaddr);
+		nrecv = recvfrom(sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&cliaddr, &lencli);
 		if(nrecv < 0)
 		{
 			perror("recvfrom: ");
@@ -81,6 +82,13 @@ int main(int argc, char **argv)
 		if(nsend < 0)
 		{
 			perror("sendto: ");
+			exit(1);
+		}
+		int lenbet;
+		nrecv = recvfrom(sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&dest, &lenbet);
+		if(nrecv < 0)
+		{
+			perror("recvfrom: ");
 			exit(1);
 		}
 	}

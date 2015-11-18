@@ -20,6 +20,7 @@ int main(int argc, char **argv)
 		perror("socket: ");
 		exit(2);
 	}
+	int nsend, nrecv;
 	struct sockaddr_in servaddr;
 	char buf[MAXLEN] = {0};
 	iphdr * ip = (iphdr *)buf;
@@ -53,15 +54,23 @@ int main(int argc, char **argv)
 		udp->s_port = htons(12345);
 		udp->length = htons(UDP_SIZE+datalen);
 		udp->check = 0;
-		fputs("please input data: ", stdout);
+		fputs("please input op: ", stdout);
 		fgets((char *)udp->data, datalen, stdin);
 
-		int res = sendto(sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
-		if(res < 0)
+		nsend = sendto(sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
+		if(nsend < 0)
 		{
 			perror("sendto: ");
 			exit(2);
 		}
+		socklen_t lenrecv = sizeof(servaddr);
+		nrecv = recvfrom(sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&servaddr, &lenrecv);
+		if(nrecv < 0)
+		{
+			perror("recvfrom: ");
+			exit(1);
+		}
+		fputs(buf, stdout);
 	}
 
 	return 0;

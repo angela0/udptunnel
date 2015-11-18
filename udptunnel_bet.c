@@ -16,10 +16,10 @@ int main(int argc, char **argv)
 		exit(2);
 	}
 
-	struct sockaddr_in myaddr;
+	struct sockaddr_in myaddr, dest;
 	int nrecv;
-	char buf[MAXLEN];
-
+	char recvbuf[MAXLEN];
+	char sendbuf[MAXLEN];
 
 	bzero(&myaddr, sizeof(myaddr));
 	myaddr.sin_family = AF_INET;
@@ -33,16 +33,30 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
+	const *reback[3] = {"Invalid target!!\n", "You can't move now!!!\n", "I can't understand you!!!\n"};
 
 	for( ; ; )
 	{
-		nrecv = recvfrom(sockfd, buf, sizeof(buf), 0, NULL, NULL);
+		socklen_t len = sizeof(dest);
+		nrecv = recvfrom(sockfd, recvbuf, sizeof(recvbuf), 0, (struct sockaddr *)&dest, &len);
 		if(nrecv < 0)
 		{
 			perror("recvfrom: ");
 			exit(1);
 		}
-		fputs(buf, stdout);
+		if(strcmp(recvbuf, "attack")==0)
+			strncpy(sendbuf, reback[0], strlen(reback[0]));
+		else if(strcmp(recvbuf, "back")==0)
+			strncpy(sendbuf, reback[1], strlen(reback[1]));
+		else
+			strncpy(sendbuf, reback[2], strlen(reback[2]));
+
+		int nsend = sendto(sockfd, sendbuf, sizeof(sendbuf), 0, (struct sockaddr *)&dest, len);
+		if(nsend < 0)
+		{
+			perror("recvfrom: ");
+			exit(1);
+		}
 	}
 
 	return 0;
