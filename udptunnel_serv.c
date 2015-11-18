@@ -17,6 +17,13 @@ int main(int argc, char **argv)
 		exit(2);
 	}
 
+	const int on = 1;
+	if(setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on)) < 0)
+	{
+		printf("setsockopt() error!\n");
+		exit(0);
+	}
+
 	struct sockaddr_in dest, servaddr, cliaddr;
 	char buf[MAXLEN];
 	char tmp[MAXLEN];
