@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 	}
 
 	const int on = 1;
-	if(setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on)) < 0)
+	if(setsockopt(rawsockfd, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on)) < 0)
 	{
 		printf("setsockopt() error!\n");
 		exit(0);
@@ -63,6 +63,18 @@ int main(int argc, char **argv)
 		udp->d_port = htons(PORT);
 		udp->s_port = htons(PORT);
 		udp->length = htons(UDP_SIZE+datalen);
+
+		psdhdr psd;
+		psd.s_ip = ip->saddr;
+		psd.d_ip = ip->daddr;
+		psd.mbz = 0;
+		psd.proto = 0x11;
+		psd.plen = udp->length;
+
+		char tmp[sizeof(psd)+ntohs(udp->length)];
+		memcpy(tmp, &psd, sizeof(psd));
+		memcpy(tmp+sizeof(psd), udp, UDP_SIZE+datalen);
+		udp->check = checksum((u16 *)tmp, sizeof(tmp));
 
 		nsend = sendto(rawsockfd, buf, sizeof(buf), 0, (struct sockaddr *)&dest, sizeof(dest));
 		if(nsend < 0)

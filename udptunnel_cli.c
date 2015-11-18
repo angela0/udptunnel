@@ -51,20 +51,9 @@ int main(int argc, char **argv)
 		udp->d_port = htons(PORT);
 		udp->s_port = htons(12345);
 		udp->length = htons(UDP_SIZE+datalen);
+		udp->check = 0;
 		fputs("please input data: ", stdout);
 		fgets((char *)udp->data, datalen, stdin);
-
-		psdhdr psd;
-		psd.s_ip = inet_addr("10.0.0.166");
-		psd.d_ip = inet_addr("10.0.0.166");
-		psd.mbz = 0;
-		psd.proto = 0x11;
-		psd.plen = udp->length;
-
-		char tmp[sizeof(psd)+ntohs(udp->length)];
-		memcpy(tmp, &psd, sizeof(psd));
-		memcpy(tmp+sizeof(psd), udp, UDP_SIZE+datalen);
-		udp->check = checksum((u16 *)tmp, sizeof(tmp));
 
 		int res = sendto(sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
 		if(res < 0)
