@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 	}
 
 	struct sockaddr_in dest, servaddr, cliaddr;
-	char buf[MAXLEN];
+	char buf[MAXLEN], sendbuf[MAXLEN], recvbuf[MAXLEN];
 	char tmp[MAXLEN];
 	int nrecv, nsend;
 
@@ -49,6 +49,7 @@ int main(int argc, char **argv)
 		perror("bind: ");
 		exit(2);
 	}
+	printf("tunnel server is okay now, serve at port %d\n", PORT);
 
 	for( ; ; )
 	{

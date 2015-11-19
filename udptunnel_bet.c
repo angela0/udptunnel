@@ -33,6 +33,8 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
+	printf("game server is okay now, serve at port %d\n", PORT);
+
 	const char *reback[3] = {"Invalid target!!\n", "You can't move now!!!\n", "I can't understand you!!!\n"};
 
 	for( ; ; )
@@ -46,6 +48,7 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 
+		printf("%s", recvbuf);
 		bzero(sendbuf, sizeof(sendbuf));
 		if(strcmp(recvbuf, "attack\n")==0)
 			strncpy(sendbuf, reback[0], strlen(reback[0]));
