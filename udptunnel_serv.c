@@ -78,7 +78,7 @@ int main(int argc, char **argv)
 		dest.sin_addr.s_addr = ip->daddr;
 		dest.sin_port = udp->d_port;
 
-		printf("%d\n", dest.sin_port);
+		printf("%d\n", ntohs(dest.sin_port));
 
 		nsend = sendto(rawsockfd, buf, sizeof(buf), 0, (struct sockaddr *)&dest, sizeof(dest));
 		if(nsend < 0)

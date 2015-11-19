@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 	}
 
 	struct sockaddr_in myaddr, dest;
-	int nrecv;
+	int nrecv, nsend;
 	char recvbuf[MAXLEN];
 	char sendbuf[MAXLEN];
 
@@ -47,7 +47,6 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 
-		printf("%s", recvbuf);
 		bzero(sendbuf, sizeof(sendbuf));
 		if(strcmp(recvbuf, "attack\n")==0)
 			strncpy(sendbuf, reback[0], strlen(reback[0]));
@@ -56,7 +55,7 @@ int main(int argc, char **argv)
 		else
 			strncpy(sendbuf, reback[2], strlen(reback[2]));
 
-		int nsend = sendto(sockfd, sendbuf, strlen(sendbuf), 0, (struct sockaddr *)&dest, sizeof(dest));
+		nsend = sendto(sockfd, sendbuf, strlen(sendbuf), 0, (struct sockaddr *)&dest, sizeof(dest));
 		if(nsend < 0)
 		{
 			perror("recvfrom: ");
