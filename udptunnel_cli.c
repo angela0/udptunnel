@@ -63,7 +63,6 @@ int main(int argc, char **argv)
 			perror("sendto: ");
 			exit(2);
 		}
-		printf("cli to serv: %s", buf);
 		socklen_t lenrecv = sizeof(servaddr);
 		nrecv = recvfrom(sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&servaddr, &lenrecv);
 		if(nrecv < 0)
