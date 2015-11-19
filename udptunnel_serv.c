@@ -111,7 +111,7 @@ int main(int argc, char **argv)
 
 		printf("");
 
-		nsend = sendto(rawsockfd, buf, sizeof(buf), 0, (struct sockaddr *)&cliaddr, sizeof(cliaddr));
+		nsend = sendto(sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&cliaddr, sizeof(cliaddr));
 		if(nsend < 0)
 		{
 			perror("sendto: ");
