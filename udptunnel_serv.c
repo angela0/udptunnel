@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 	}
 
 	struct sockaddr_in dest, servaddr, cliaddr;
-	char buf[MAXLEN], sendbuf[MAXLEN], recvbuf[MAXLEN];
+	char buf[MAXLEN], sendbuf[2*MAXLEN], recvbuf[MAXLEN];
 	char tmp[MAXLEN];
 	int nrecv, nsend;
 
@@ -87,13 +87,27 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 		socklen_t lenbet = sizeof(dest);
-		nrecv = recvfrom(sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&dest, &lenbet);
+		nrecv = recvfrom(sockfd, recvbuf, sizeof(recvbuf), 0, (struct sockaddr *)&dest, &lenbet);
 		if(nrecv < 0)
 		{
 			perror("recvfrom: ");
 			exit(1);
 		}
-		nsend = sendto(sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&cliaddr, sizeof(cliaddr));
+
+		strcpy(udp->data, recvbuf);
+		udp->d_port = cliaddr.sin_port;
+		udp->s_port = htons(PORT);
+
+		psd.s_ip = ip->saddr;
+		psd.d_ip = ip->daddr;
+		psd.mbz = 0;
+		psd.proto = 0x11;
+		psd.plen = udp->length;
+		memcpy(tmp, &psd, sizeof(psd));
+		memcpy(tmp+sizeof(psd), udp, UDP_SIZE+datalen);
+		udp->check = checksum((u16 *)tmp, sizeof(tmp));
+
+		nsend = sendto(rawsockfd, buf, sizeof(buf), 0, (struct sockaddr *)&cliaddr, sizeof(cliaddr));
 		if(nsend < 0)
 		{
 			perror("sendto: ");

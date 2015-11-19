@@ -6,6 +6,7 @@
  */
 
 #include "udptunnel.h"
+#include <stdlib.h>
 
 int main(int argc, char **argv)
 {
@@ -49,13 +50,13 @@ int main(int argc, char **argv)
 
 		bzero(sendbuf, sizeof(sendbuf));
 		if(strcmp(recvbuf, "attack\n")==0)
-			strncpy(sendbuf, reback[0], strlen(reback[0]));
+			strcpy(sendbuf, reback[0]);
 		else if(strcmp(recvbuf, "back\n")==0)
-			strncpy(sendbuf, reback[1], strlen(reback[1]));
+			strcpy(sendbuf, reback[1]);
 		else
-			strncpy(sendbuf, reback[2], strlen(reback[2]));
+			strcpy(sendbuf, reback[2]);
 
-		nsend = sendto(sockfd, sendbuf, strlen(sendbuf), 0, (struct sockaddr *)&dest, sizeof(dest));
+		nsend = sendto(sockfd, sendbuf, sizeof(sendbuf), 0, (struct sockaddr *)&dest, sizeof(dest));
 		if(nsend < 0)
 		{
 			perror("recvfrom: ");

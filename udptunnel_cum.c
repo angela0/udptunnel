@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 	addr.sin_port = htons(12345);
 	addr.sin_len = sizeof(addr);
 
-	if(bind(sockfd, (struct sockaddr *)addr, sizeof(addr)) < 0)
+	if(bind(sockfd, (struct sockaddr *)addr, sizeof(addr))) < 0)
 	{
 		perror("bind: ");
 		exit(1);
