@@ -44,9 +44,9 @@ int main(int argc, char **argv)
 			perror("recvfrom: ");
 			exit(1);
 		}
-		if(strcmp(recvbuf, "attack")==0)
+		if(strcmp(recvbuf, "attack\n")==0)
 			strncpy(sendbuf, reback[0], strlen(reback[0]));
-		else if(strcmp(recvbuf, "back")==0)
+		else if(strcmp(recvbuf, "back\n")==0)
 			strncpy(sendbuf, reback[1], strlen(reback[1]));
 		else
 			strncpy(sendbuf, reback[2], strlen(reback[2]));
