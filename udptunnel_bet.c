@@ -45,11 +45,11 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 		if(strcmp(recvbuf, "attack\n")==0)
-			strncpy(sendbuf, reback[0], strlen(reback[0]));
+			strncpy(strlen(reback[0]), reback[0], strlen(reback[0]));
 		else if(strcmp(recvbuf, "back\n")==0)
-			strncpy(sendbuf, reback[1], strlen(reback[1]));
+			strncpy(strlen(reback[1]), reback[1], strlen(reback[1]));
 		else
-			strncpy(sendbuf, reback[2], strlen(reback[2]));
+			strncpy(strlen(reback[2]), reback[2], strlen(reback[2]));
 
 		int nsend = sendto(sockfd, sendbuf, sizeof(sendbuf), 0, (struct sockaddr *)&dest, len);
 		if(nsend < 0)
