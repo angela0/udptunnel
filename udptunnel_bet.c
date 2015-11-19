@@ -37,6 +37,7 @@ int main(int argc, char **argv)
 
 	for( ; ; )
 	{
+		bzero(recvbuf, sizeof(recvbuf));
 		socklen_t len = sizeof(dest);
 		nrecv = recvfrom(sockfd, recvbuf, sizeof(recvbuf), 0, (struct sockaddr *)&dest, &len);
 		if(nrecv < 0)
@@ -44,6 +45,8 @@ int main(int argc, char **argv)
 			perror("recvfrom: ");
 			exit(1);
 		}
+
+		bzero(sendbuf, sizeof(sendbuf));
 		if(strcmp(recvbuf, "attack\n")==0)
 			strncpy(sendbuf, reback[0], strlen(reback[0]));
 		else if(strcmp(recvbuf, "back\n")==0)
