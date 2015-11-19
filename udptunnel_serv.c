@@ -34,11 +34,6 @@ int main(int argc, char **argv)
 
 	datalen = MAXLEN-IP_SIZE-UDP_SIZE;
 
-	bzero(&dest, sizeof(dest));
-	dest.sin_family = AF_INET;
-	dest.sin_addr.s_addr = inet_addr("10.0.0.166");
-	dest.sin_port = htons(PORT);
-
 
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
@@ -77,6 +72,11 @@ int main(int argc, char **argv)
 		memcpy(tmp, &psd, sizeof(psd));
 		memcpy(tmp+sizeof(psd), udp, UDP_SIZE+datalen);
 		udp->check = checksum((u16 *)tmp, sizeof(tmp));
+
+		bzero(&dest, sizeof(dest));
+		dest.sin_family = AF_INET;
+		dest.sin_addr.s_addr = ip->daddr;
+		dest.sin_port = udp->d_port;
 
 		nsend = sendto(rawsockfd, buf, sizeof(buf), 0, (struct sockaddr *)&dest, sizeof(dest));
 		if(nsend < 0)
