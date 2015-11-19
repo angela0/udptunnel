@@ -97,6 +97,7 @@ int main(int argc, char **argv)
 		strcpy(udp->data, recvbuf);
 		udp->d_port = cliaddr.sin_port;
 		udp->s_port = htons(PORT);
+		udp->check = 0;
 
 		psd.s_ip = ip->saddr;
 		psd.d_ip = ip->daddr;
@@ -105,7 +106,10 @@ int main(int argc, char **argv)
 		psd.plen = udp->length;
 		memcpy(tmp, &psd, sizeof(psd));
 		memcpy(tmp+sizeof(psd), udp, UDP_SIZE+datalen);
+
 		udp->check = checksum((u16 *)tmp, sizeof(tmp));
+
+		printf("");
 
 		nsend = sendto(rawsockfd, buf, sizeof(buf), 0, (struct sockaddr *)&cliaddr, sizeof(cliaddr));
 		if(nsend < 0)

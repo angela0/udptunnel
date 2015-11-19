@@ -70,7 +70,7 @@ int main(int argc, char **argv)
 			perror("recvfrom: ");
 			exit(1);
 		}
-		fputs(buf, stdout);
+		fputs(buf+IP_SIZE+UDP_SIZE, stdout);
 	}
 
 	return 0;
