@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 
-		ip->saddr = inet_addr("10.0.0.16");
+		ip->saddr = inet_addr(TUNADDR);
 		udp->d_port = htons(PORT);
 		udp->s_port = htons(PORT);
 		udp->length = htons(UDP_SIZE+datalen);
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 			perror("sendto: ");
 			exit(1);
 		}
-		int lenbet;
+		socklen_t lenbet = sizeof(dest);
 		nrecv = recvfrom(sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&dest, &lenbet);
 		if(nrecv < 0)
 		{

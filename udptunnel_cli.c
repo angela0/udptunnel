@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
-	servaddr.sin_addr.s_addr = inet_addr("10.0.0.16");
+	servaddr.sin_addr.s_addr = inet_addr(argv[1]);
 	servaddr.sin_port = htons(PORT);
 	servaddr.sin_len = sizeof(servaddr);
 
@@ -46,8 +46,8 @@ int main(int argc, char **argv)
 		ip->ttl = 0x40;
 		ip->protocol = IPPROTO_UDP;
 		ip->check = 0;
-		ip->daddr = inet_addr("10.0.0.166");
-		ip->saddr = inet_addr("10.0.0.166");
+		ip->daddr = inet_addr(ADDR);
+		ip->saddr = inet_addr(ADDR);
 		ip->check = checksum((u16 *)(buf+ETH_SIZE), IP_SIZE+UDP_SIZE+datalen);
 
 		udp->d_port = htons(PORT);
@@ -63,6 +63,7 @@ int main(int argc, char **argv)
 			perror("sendto: ");
 			exit(2);
 		}
+		printf("cli to serv: %s", buf);
 		socklen_t lenrecv = sizeof(servaddr);
 		nrecv = recvfrom(sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&servaddr, &lenrecv);
 		if(nrecv < 0)
